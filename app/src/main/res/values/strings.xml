@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BubbleLevel</string>
+    <!-- UI Elements -->
+    <string name="btn_capture">Click</string>
+
+    <!-- Toast Messages -->
+    <string name="camera_not_found">No camera harware found</string>
+    <string name="take_photo_help">Touch anywhere on screen to take picture</string>
+    <string name="photo_taken">Photo taken and saved in internal storage!</string>
+</resources>
