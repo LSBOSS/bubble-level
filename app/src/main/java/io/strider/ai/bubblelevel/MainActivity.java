@@ -14,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +34,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import io.strider.ai.bubblelevel.sensor.BubbleLevel;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "CamTestActivity";
     Preview preview;
@@ -39,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
     Camera camera;
     Activity act;
     Context ctx;
+    BubbleLevel bubbleLevel;
+    SensorManager sensorManager;
+    Sensor sensor;
+
+    Boolean enablePhoto;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        Log.i(TAG, "Calling bubble level sensors service.");
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        bubbleLevel = new BubbleLevel(sensorManager, sensor,this);
+
         Log.i(TAG, "Creating view.");
         preview = new Preview(this, (SurfaceView)findViewById(R.id.surfaceView));
         preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -58,8 +72,14 @@ public class MainActivity extends AppCompatActivity {
         preview.setKeepScreenOn(true);
 
         preview.setOnClickListener((View arg0) -> {
-            camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            Toast.makeText(ctx, getString(R.string.photo_taken), Toast.LENGTH_LONG).show();
+
+            if (bubbleLevel.isCameraEnabled()) {
+                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                Toast.makeText(ctx, getString(R.string.photo_taken), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(ctx, getString(R.string.photo_unauthorized), Toast.LENGTH_LONG).show();
+            }
+
         });
 
         Toast.makeText(ctx, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
@@ -79,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        sensorManager.registerListener(bubbleLevel, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         int numCams = Camera.getNumberOfCameras();
         Log.i(TAG, "Number of cameras found: " + String.valueOf(numCams));
         if(numCams > 0){
