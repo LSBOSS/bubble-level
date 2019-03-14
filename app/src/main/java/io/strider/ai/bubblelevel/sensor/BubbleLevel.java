@@ -7,11 +7,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
-
-import java.util.Arrays;
 
 import io.strider.ai.bubblelevel.R;
 
@@ -28,10 +27,13 @@ public class BubbleLevel implements SensorEventListener{
 
     private Sensor                  sensor;
     private SensorManager           sensorManager;
-    private TextView                textThetaX;
-    private TextView                textThetaY;
+//    private TextView                textThetaX;
+//    private TextView                textThetaY;
+    private TextView                userMessage;
+    private ToneGenerator           toneGenerator;
 
     private Boolean enablePhoto;
+    private Boolean tonePlayed;
     private double thetaX;
     private double thetaY;
 
@@ -43,12 +45,16 @@ public class BubbleLevel implements SensorEventListener{
         this.sensorManager = sensorManager;
         this.sensor = sensor;
 
-        textThetaX =  (TextView) ((Activity) ctx).findViewById(R.id.thetaX);
-        textThetaY =  (TextView) ((Activity) ctx).findViewById(R.id.thetaY);
+//        textThetaX =  (TextView) ((Activity) ctx).findViewById(R.id.thetaX);
+//        textThetaY =  (TextView) ((Activity) ctx).findViewById(R.id.thetaY);
+
+        userMessage = (TextView) ((Activity) ctx).findViewById(R.id.user_message);
+        toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
 
         Log.i(TAG, "Initializing bubble level service.");
 
         enablePhoto = false;
+        tonePlayed = false;
         thetaX = 0d;
         thetaY = 0d;
 
@@ -74,22 +80,37 @@ public class BubbleLevel implements SensorEventListener{
         thetaX = Math.toDegrees(Math.asin(gy/GRAVITY));
         thetaY = Math.toDegrees(Math.asin(gx/GRAVITY));
 
-        textThetaX.setText(String.format("X = %f degrees",thetaX));
-        textThetaY.setText(String.format("Y = %f degrees",thetaY));
+//        textThetaX.setText(String.format("X = %f degrees",thetaX));
+//        textThetaY.setText(String.format("Y = %f degrees",thetaY));
 
 //        Log.i(TAG, String.format("[ SENSOR ] gx = %f  gy = %f  /  theta_x = %f degrees   theta_y = %f degrees", gx, gy, thetaX, thetaY));
 
 
         if (thetaX >= MIN_DEGREE && thetaX <= MAX_DEGREE && thetaY >= MIN_DEGREE && thetaY <= MAX_DEGREE) {
             enablePhoto = true;
-            textThetaX.setTextColor(Color.GREEN);
-            textThetaY.setTextColor(Color.GREEN);
+//            textThetaX.setTextColor(Color.GREEN);
+//            textThetaY.setTextColor(Color.GREEN);
+            userMessage.setBackgroundColor(Color.GREEN);
+            userMessage.setText(R.string.photo_authorized);
+            if (!tonePlayed) {
+                toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP);
+                tonePlayed = true;
+            }
+
 
             Log.i(TAG, "Camera enabled");
         } else {
             enablePhoto = false;
-            textThetaX.setTextColor(Color.RED);
-            textThetaY.setTextColor(Color.RED);
+            tonePlayed = false;
+//            textThetaX.setTextColor(Color.RED);
+//            textThetaY.setTextColor(Color.RED);
+            userMessage.setBackgroundColor(Color.RED);
+
+            if (thetaY > 0) {
+                userMessage.setText(R.string.phone_up);
+            } else {
+                userMessage.setText(R.string.phone_down);
+            }
         }
 
     }

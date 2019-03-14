@@ -8,30 +8,48 @@
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:layout_gravity="center"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/thetaX"
-            android:layout_gravity="bottom|center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="5dp"
-            android:text="/"
+            android:id="@+id/user_message"
             android:textColor="@android:color/white"
+            android:padding="5dp"
             android:layout_gravity="bottom|center"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/thetaY"
-            android:paddingStart="5dp"
-            android:layout_gravity="bottom|center"/>
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/thetaX"-->
+            <!--android:background="@android:color/background_dark"-->
+            <!--android:layout_gravity="bottom|center"/>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingStart="5dp"-->
+            <!--android:text="/"-->
+            <!--android:background="@android:color/background_dark"-->
+            <!--android:textColor="@android:color/white"-->
+            <!--android:layout_gravity="bottom|center"/>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/thetaY"-->
+            <!--android:paddingStart="5dp"-->
+            <!--android:background="@android:color/background_dark"-->
+            <!--android:layout_gravity="bottom|center"/>-->
     </LinearLayout>
     
 

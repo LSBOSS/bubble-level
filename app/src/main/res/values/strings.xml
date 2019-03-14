@@ -8,4 +8,8 @@
     <string name="take_photo_help">Touch anywhere on screen to take picture</string>
     <string name="photo_taken">Photo taken and saved in internal storage!</string>
     <string name="photo_unauthorized">Photo orientation not authorized!</string>
+
+    <string name="phone_up">TILT CAMERA FORWARD</string>
+    <string name="phone_down">TILT CAMERA BACKWARD</string>
+    <string name="photo_authorized">CAMERA OK!</string>
 </resources>
