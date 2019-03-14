@@ -2,7 +2,11 @@ package io.strider.ai.bubblelevel.sensor;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,6 +14,7 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.strider.ai.bubblelevel.R;
@@ -31,13 +36,22 @@ public class BubbleLevel implements SensorEventListener{
 //    private TextView                textThetaY;
     private TextView                userMessage;
     private ToneGenerator           toneGenerator;
+    private Canvas                  canvasY;
+    private Canvas                  canvasX;
+    private Rect                    rectangleY;
+    private Rect                    rectangleX;
+    private Paint                   paintRectangle;
+    private Bitmap                  bitmapY;
+    private Bitmap                  bitmapX;
+    private ImageView               mImageViewY;
+    private ImageView               mImageViewX;
+    private Paint                   paintLine;
+
 
     private Boolean enablePhoto;
     private Boolean tonePlayed;
     private double thetaX;
     private double thetaY;
-
-    private double[] gravity = {0,0,0};
 
 
     public BubbleLevel(SensorManager sensorManager, Sensor sensor, Context ctx) {
@@ -45,13 +59,43 @@ public class BubbleLevel implements SensorEventListener{
         this.sensorManager = sensorManager;
         this.sensor = sensor;
 
-//        textThetaX =  (TextView) ((Activity) ctx).findViewById(R.id.thetaX);
-//        textThetaY =  (TextView) ((Activity) ctx).findViewById(R.id.thetaY);
+        mImageViewY = (ImageView) ((Activity) ctx).findViewById(R.id.iv);
+        mImageViewX = (ImageView) ((Activity) ctx).findViewById(R.id.ix);
 
         userMessage = (TextView) ((Activity) ctx).findViewById(R.id.user_message);
         toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
 
-        Log.i(TAG, "Initializing bubble level service.");
+        bitmapY = Bitmap.createBitmap(
+                50, // Width
+                200, // Height
+                Bitmap.Config.ARGB_8888 // Config
+        );
+
+        bitmapX = Bitmap.createBitmap(
+                200, // Width
+                50, // Height
+                Bitmap.Config.ARGB_8888 // Config
+        );
+
+        canvasY = new Canvas(bitmapY);
+        canvasY.drawColor(Color.LTGRAY);
+
+        canvasX = new Canvas(bitmapX);
+        canvasY.drawColor(Color.LTGRAY);
+
+        rectangleY = new Rect(0,0, canvasY.getWidth(), canvasY.getHeight());
+        rectangleX = new Rect(0,0, canvasX.getWidth(), canvasX.getHeight());
+
+        paintRectangle = new Paint();
+        paintRectangle.setStyle(Paint.Style.FILL);
+        paintRectangle.setColor(Color.YELLOW);
+        paintRectangle.setAntiAlias(true);
+
+        paintLine = new Paint();
+        paintLine.setStyle(Paint.Style.FILL);
+        paintLine.setColor(Color.BLACK);
+        paintLine.setAntiAlias(true);
+        paintLine.setStrokeWidth(2f);
 
         enablePhoto = false;
         tonePlayed = false;
@@ -63,16 +107,8 @@ public class BubbleLevel implements SensorEventListener{
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-
-        final double alpha = 0.9;
-
-//        gravity[0] = alpha * gravity[0] + (1 - alpha) * sensorEvent.values[0];
-//        gravity[1] = alpha * gravity[1] + (1 - alpha) * sensorEvent.values[1];
-
         double gx = sensorEvent.values[0] > GRAVITY ? GRAVITY : sensorEvent.values[0];
         double gy = sensorEvent.values[1] > GRAVITY ? GRAVITY : sensorEvent.values[1];
-//        double gx = gravity[0] > GRAVITY ? GRAVITY : gravity[0];
-//        double gy = gravity[1] > GRAVITY ? GRAVITY : gravity[1];
 
         gx = gx < -GRAVITY ? -GRAVITY : gx;
         gy = gy < -GRAVITY ? -GRAVITY : gy;
@@ -80,16 +116,25 @@ public class BubbleLevel implements SensorEventListener{
         thetaX = Math.toDegrees(Math.asin(gy/GRAVITY));
         thetaY = Math.toDegrees(Math.asin(gx/GRAVITY));
 
-//        textThetaX.setText(String.format("X = %f degrees",thetaX));
-//        textThetaY.setText(String.format("Y = %f degrees",thetaY));
+        canvasY.drawRect(rectangleY, paintRectangle);
+        canvasX.drawRect(rectangleX, paintRectangle);
 
-//        Log.i(TAG, String.format("[ SENSOR ] gx = %f  gy = %f  /  theta_x = %f degrees   theta_y = %f degrees", gx, gy, thetaX, thetaY));
+        // Draw Thresholds
+        canvasY.drawLine(0, getLineLocation(30d), canvasY.getWidth(), getLineLocation(30d), paintLine);
+        canvasY.drawLine(0, getLineLocation(-30d), canvasY.getWidth(), getLineLocation(-30d), paintLine);
 
+        canvasX.drawLine(getLineLocation(30d), 0, getLineLocation(30d), canvasX.getHeight(), paintLine);
+        canvasX.drawLine(getLineLocation(-30d), 0, getLineLocation(-30d), canvasX.getHeight(), paintLine);
+
+        canvasY.drawLine(0, getLineLocation(thetaY), canvasY.getWidth(), getLineLocation(thetaY), paintLine);
+        canvasX.drawLine(getLineLocation(thetaX), 0, getLineLocation(thetaX), canvasX.getHeight(), paintLine);
+
+
+        mImageViewY.setImageBitmap(bitmapY);
+        mImageViewX.setImageBitmap(bitmapX);
 
         if (thetaX >= MIN_DEGREE && thetaX <= MAX_DEGREE && thetaY >= MIN_DEGREE && thetaY <= MAX_DEGREE) {
             enablePhoto = true;
-//            textThetaX.setTextColor(Color.GREEN);
-//            textThetaY.setTextColor(Color.GREEN);
             userMessage.setBackgroundColor(Color.GREEN);
             userMessage.setText(R.string.photo_authorized);
             if (!tonePlayed) {
@@ -102,8 +147,6 @@ public class BubbleLevel implements SensorEventListener{
         } else {
             enablePhoto = false;
             tonePlayed = false;
-//            textThetaX.setTextColor(Color.RED);
-//            textThetaY.setTextColor(Color.RED);
             userMessage.setBackgroundColor(Color.RED);
 
             if (thetaY > 0) {
@@ -113,6 +156,11 @@ public class BubbleLevel implements SensorEventListener{
             }
         }
 
+    }
+
+    private int getLineLocation(double angle){
+        Double value =  ( - angle + 90d) * 1.111d;
+        return value.intValue();
     }
 
     @Override
