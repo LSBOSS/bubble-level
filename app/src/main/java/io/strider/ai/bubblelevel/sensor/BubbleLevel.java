@@ -27,8 +27,8 @@ public class BubbleLevel implements SensorEventListener{
 
     static private final String TAG = "BubbleLevel";
     static private final double GRAVITY = 9.81d;
-    static private final double MIN_DEGREE = -30d;
-    static private final double MAX_DEGREE = 30d;
+    static private final double MIN_DEGREE = -20d;
+    static private final double MAX_DEGREE = 20d;
 
     private Sensor                  sensor;
     private SensorManager           sensorManager;
@@ -120,11 +120,11 @@ public class BubbleLevel implements SensorEventListener{
         canvasX.drawRect(rectangleX, paintRectangle);
 
         // Draw Thresholds
-        canvasY.drawLine(0, getLineLocation(30d), canvasY.getWidth(), getLineLocation(30d), paintLine);
-        canvasY.drawLine(0, getLineLocation(-30d), canvasY.getWidth(), getLineLocation(-30d), paintLine);
+        canvasY.drawLine(0, getLineLocation(MAX_DEGREE), canvasY.getWidth(), getLineLocation(MAX_DEGREE), paintLine);
+        canvasY.drawLine(0, getLineLocation(MIN_DEGREE), canvasY.getWidth(), getLineLocation(MIN_DEGREE), paintLine);
 
-        canvasX.drawLine(getLineLocation(30d), 0, getLineLocation(30d), canvasX.getHeight(), paintLine);
-        canvasX.drawLine(getLineLocation(-30d), 0, getLineLocation(-30d), canvasX.getHeight(), paintLine);
+        canvasX.drawLine(getLineLocation(MAX_DEGREE), 0, getLineLocation(MAX_DEGREE), canvasX.getHeight(), paintLine);
+        canvasX.drawLine(getLineLocation(MIN_DEGREE), 0, getLineLocation(MIN_DEGREE), canvasX.getHeight(), paintLine);
 
         canvasY.drawLine(0, getLineLocation(thetaY), canvasY.getWidth(), getLineLocation(thetaY), paintLine);
         canvasX.drawLine(getLineLocation(thetaX), 0, getLineLocation(thetaX), canvasX.getHeight(), paintLine);
