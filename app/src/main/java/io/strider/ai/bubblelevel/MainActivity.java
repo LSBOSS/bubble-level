@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         ctx = this;
         act = this;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
@@ -75,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
             if (bubbleLevel.isCameraEnabled()) {
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                Toast.makeText(ctx, getString(R.string.photo_taken), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(ctx, getString(R.string.photo_unauthorized), Toast.LENGTH_LONG).show();
             }
@@ -159,6 +159,8 @@ public class MainActivity extends AppCompatActivity {
 
     private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 
+        String fileName;
+
         @Override
         protected Void doInBackground(byte[]... data) {
             FileOutputStream outStream = null;
@@ -166,10 +168,10 @@ public class MainActivity extends AppCompatActivity {
             // Write to SD Card
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
-                File dir = new File (sdCard.getAbsolutePath() + "/camtest");
+                File dir = new File (sdCard.getAbsolutePath() + "/bubble_level_app_images");
                 dir.mkdirs();
 
-                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                fileName = String.format("strider_%d.jpg", System.currentTimeMillis());
                 File outFile = new File(dir, fileName);
 
                 outStream = new FileOutputStream(outFile);
@@ -189,5 +191,10 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(ctx, String.format(getString(R.string.photo_taken), fileName), Toast.LENGTH_LONG).show();
+        }
     }
 }

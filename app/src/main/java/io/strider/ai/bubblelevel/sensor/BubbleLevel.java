@@ -109,6 +109,7 @@ public class BubbleLevel implements SensorEventListener{
 
         double gx = sensorEvent.values[0] > GRAVITY ? GRAVITY : sensorEvent.values[0];
         double gy = sensorEvent.values[1] > GRAVITY ? GRAVITY : sensorEvent.values[1];
+        double gz = sensorEvent.values[2];
 
         gx = gx < -GRAVITY ? -GRAVITY : gx;
         gy = gy < -GRAVITY ? -GRAVITY : gy;
@@ -133,7 +134,7 @@ public class BubbleLevel implements SensorEventListener{
         mImageViewY.setImageBitmap(bitmapY);
         mImageViewX.setImageBitmap(bitmapX);
 
-        if (thetaX >= MIN_DEGREE && thetaX <= MAX_DEGREE && thetaY >= MIN_DEGREE && thetaY <= MAX_DEGREE) {
+        if (thetaX >= MIN_DEGREE && thetaX <= MAX_DEGREE && thetaY >= MIN_DEGREE && thetaY <= MAX_DEGREE && gz > 0d) {
             enablePhoto = true;
             userMessage.setBackgroundColor(Color.GREEN);
             userMessage.setText(R.string.photo_authorized);
