@@ -25,13 +25,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import io.strider.ai.bubblelevel.sensor.BubbleLevel;
@@ -39,7 +38,7 @@ import io.strider.ai.bubblelevel.sensor.BubbleLevel;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "CamTestActivity";
     Preview preview;
-    Button buttonClick;
+    ImageButton takePhotoBtn;
     Camera camera;
     Activity act;
     Context ctx;
@@ -66,13 +65,9 @@ public class MainActivity extends AppCompatActivity {
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         bubbleLevel = new BubbleLevel(sensorManager, sensor,this);
 
-        Log.i(TAG, "Creating view.");
-        preview = new Preview(this, (SurfaceView)findViewById(R.id.surfaceView));
-        preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        ((FrameLayout) findViewById(R.id.layout)).addView(preview);
-        preview.setKeepScreenOn(true);
+        takePhotoBtn = (ImageButton) findViewById(R.id.camera_btn);
 
-        preview.setOnClickListener((View arg0) -> {
+        takePhotoBtn.setOnClickListener((View arg0) -> {
 
             if (bubbleLevel.isCameraEnabled()) {
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
@@ -81,6 +76,22 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        Log.i(TAG, "Creating view.");
+        preview = new Preview(this, (SurfaceView)findViewById(R.id.surfaceView));
+        preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        ((FrameLayout) findViewById(R.id.layout)).addView(preview);
+        preview.setKeepScreenOn(true);
+
+//        preview.setOnClickListener((View arg0) -> {
+//
+//            if (bubbleLevel.isCameraEnabled()) {
+//                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+//            } else {
+//                Toast.makeText(ctx, getString(R.string.photo_unauthorized), Toast.LENGTH_LONG).show();
+//            }
+//
+//        });
 
         Toast.makeText(ctx, getString(R.string.take_photo_help), Toast.LENGTH_LONG).show();
     }
@@ -107,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
             try{
                 getPermissions();
                 camera = Camera.open(0);
+                Camera.Parameters params = camera.getParameters();
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                camera.setParameters(params);
                 camera.startPreview();
                 preview.setCamera(camera);
             } catch (RuntimeException ex){
