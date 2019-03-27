@@ -32,8 +32,6 @@ public class BubbleLevel implements SensorEventListener{
 
     private Sensor                  sensor;
     private SensorManager           sensorManager;
-//    private TextView                textThetaX;
-//    private TextView                textThetaY;
     private TextView                userMessage;
     private ToneGenerator           toneGenerator;
     private Canvas                  canvasY;

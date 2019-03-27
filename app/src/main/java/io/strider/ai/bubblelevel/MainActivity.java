@@ -1,10 +1,5 @@
 package io.strider.ai.bubblelevel;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -28,10 +23,14 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import io.strider.ai.bubblelevel.sensor.BubbleLevel;
 
@@ -45,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
     BubbleLevel bubbleLevel;
     SensorManager sensorManager;
     Sensor sensor;
-
-    Boolean enablePhoto;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,9 +115,6 @@ public class MainActivity extends AppCompatActivity {
             try{
                 getPermissions();
                 camera = Camera.open(0);
-                Camera.Parameters params = camera.getParameters();
-                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                camera.setParameters(params);
                 camera.startPreview();
                 preview.setCamera(camera);
             } catch (RuntimeException ex){
